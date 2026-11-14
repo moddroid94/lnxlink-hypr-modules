@@ -1,29 +1,40 @@
-# lnxlink caelestia/hyprland modules
+# lnxlink hyprland modules
 
-A series of custom caelestia/hyprland focused group of modules for [lnxlink](https://github.com/bkbilly/lnxlink).
+A small collection of custom hyprland shell focused group of modules for [lnxlink](https://github.com/bkbilly/lnxlink).
 
 ## Custom Service start for some qml shells
-Lockscreen and Screen state modules may require a custom systemd trigger, depending on the configuration of your shell/greeter, caelestia for example needs to touch a file after starting hyprland to then trigger the lnxlink service start, otherwise it will start before it and not pick up the session environment set by the hyprland startup process.
+All user session related modules may require a custom systemd trigger, depending on the configuration of your shell/greeter. 
+In my case, using caelestia or dux shell, I have to touch a file after starting hyprland in the shell, as the login greeter uses hyprland itself, lnxlink gets triggered before the actual login.
+
+I've included the edited systemd service, the trigger ready path service and the touch command to be added to hyprland.lua, more info on [systemd/readme.md](/systemd/readme.md)
 
 ## Modules:
-- hypr_lock (custom caelestia lock/unlock toggle)
+- hypr_lock (custom lock/unlock toggle)
 - hypr_screen (custom hyprland dpms monitor on/off)
-- hypr_color (custom caelestia current accent state)
+- hypr_color (custom current accent state)
 
-## MakeYourOwn
-Hyprland is merely a compositor, what you run on top is totally your choice, and because of that, making an universal module i basically impossible.
+## Usage
+Hyprland is merely a compositor, what you run on top is totally your choice, and because of that, making an universal module is basically impossible.
 
-### screen state module 
-Uses a custom command that can be easily changed to fit the current shell IPC call for that function
 
-### Lock screen R/W
-Simple dmps enable/disable command, should work with most installation out of the box
+### - Lock screen R/W
+Change the `compositor` variable at the beginning of the file depending on your shell, this only works in that specific shell.
 
-### System Accent Color
-Ricing is important, the included module reads the custom caelestia scheme file, could be easily redirected to whatever color scheme you use
+Available shells:
+- Dux "dms" - Default
+- Caelestia "caelestia"
 
-# Usage
 
-just copy the modules somewhere and point your lnxlink custom modules config to it.
+### - Screen OnOff R/W
+Simple dpms enable/disable command, should work with most installations out of the box
 
-remove the default session_lock and screen_onoff if using the respective custom modules.
+
+### - System Accent Color RO
+Ricing is important, the included module reads the current scheme accent color from the generated file.
+There are 2 variants:
+- caelestia: uses a custom json/generator
+- dux: uses standard matugen toml file
+
+# Installation
+
+Copy the modules somewhere in your home and point your lnxlink custom modules entry to them, refer to the [lnxlink](https://github.com/bkbilly/lnxlink) page for more info.

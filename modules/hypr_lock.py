@@ -6,11 +6,9 @@ import subprocess
 from shutil import which
 from typing import Any, Dict, Optional, Tuple
 
-from lnxlink.modules.scripts.helpers import syscommand
-
-import caelestia
-
 logger = logging.getLogger("lnxlink")
+
+compositor = "dms"  # calestia / dms
 
 
 class Addon:
@@ -79,37 +77,33 @@ class Addon:
         env_session = os.environ.get("XDG_SESSION_ID")
         if env_session:
             return env_session
-
-        stdout, _, _ = syscommand("loginctl list-sessions --no-legend", ignore_errors=True)
-        for line in stdout.splitlines():
-            parts = line.split()
-            if len(parts) >= 3 and self.user and parts[2] == self.user:
-                return parts[0]
         return None
 
     def _read_lock_state(self) -> Tuple[Optional[bool], str]:
         if not self.session_id:
             return None, ""
         if "hyprland" in self.desktop_env:
-            command = ["qs", "-c", "caelestia", "ipc", "call", "lock", "isLocked"]
+            if compositor == "dms":
+                command = ["dms", "ipc", "call", "lock", "isLocked"]
+            elif compositor == "caelestia":
+                command = ["qs", "-c", "caelestia", "ipc", "call", "lock", "isLocked"]
+            else:
+                logger.error("Unknown Compositor option")
+                return None, ""
             value = self._run_command(command)
             return self._parse_bool(value.strip()), value
-        stdout, _, _ = syscommand(
-            f"loginctl show-session {self.session_id} -p LockedHint",
-            ignore_errors=True,
-        )
-        value = stdout.split("=", maxsplit=1)[-1].strip()
-        return self._parse_bool(value), stdout
+        return None, ""
 
     def _lock(self):
         command = ["loginctl", "lock-session"]
+        # passing session to loginctl does not work on hypr, just use bare command
         if self.session_id and "hyprland" not in self.desktop_env:
-            # passing session to loginctl does not work, just use bare command
             command.append(self.session_id)
         self._run_command(command)
 
     def _unlock(self):
         command = ["loginctl", "unlock-session"]
+        # passing session to loginctl does not work on hypr, just use bare command
         if self.session_id and "hyprland" not in self.desktop_env:
             command.append(self.session_id)
         self._run_command(command)
