@@ -1,6 +1,6 @@
 # lnxlink caelestia/hyprland modules
 
-A series of custom caelestia/hyprland focused group of modules for lnxlink.
+A series of custom caelestia/hyprland focused group of modules for [lnxlink](https://github.com/bkbilly/lnxlink).
 
 ## Custom Service start for some qml shells
 Lockscreen and Screen state modules may require a custom systemd trigger, depending on the configuration of your shell/greeter, caelestia for example needs to touch a file after starting hyprland to then trigger the lnxlink service start, otherwise it will start before it and not pick up the session environment set by the hyprland startup process.
